@@ -1,3 +1,5 @@
+
+
 'use client'
 
 import { useEffect } from 'react'
@@ -9,10 +11,16 @@ export default function Callback() {
 
   useEffect(() => {
     const handleLogin = async () => {
-      const { data } = await supabase.auth.getSession()
 
-      if (data.session) {
-        router.push('/dashboard')
+      // ✅ IMPORTANT — process OAuth response
+      const { error } = await supabase.auth.exchangeCodeForSession(
+        window.location.href
+      )
+
+      if (!error) {
+        router.replace('/dashboard')
+      } else {
+        router.replace('/')
       }
     }
 
