@@ -17,7 +17,7 @@ export default function Callback() {
     }
 
     handleLogin()
-  }, [])
+  }, [router])
 
   return <p>Logging you in...</p>
 }
