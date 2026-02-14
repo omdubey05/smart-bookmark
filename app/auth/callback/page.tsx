@@ -12,12 +12,12 @@ export default function Callback() {
       const { data } = await supabase.auth.getSession()
 
       if (data.session) {
-        router.push('/')
+        router.push('/dashboard')
       }
     }
 
     handleLogin()
-  }, [router])
+  }, [])
 
   return <p>Logging you in...</p>
 }
