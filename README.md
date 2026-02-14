@@ -1,36 +1,151 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Smart Bookmark App
 
-## Getting Started
+A simple bookmark manager built using Next.js (App Router), Supabase, and Tailwind CSS.
 
-First, run the development server:
+This application allows users to sign in using Google OAuth and manage their own private bookmarks with real-time updates.
 
-```bash
+---
+
+## ✅ Features Implemented
+
+- Google OAuth login (no email/password)
+- Add bookmarks (title + URL)
+- Private bookmarks per user
+- Real-time updates without page refresh
+- Delete bookmarks
+- Deployed live on Vercel
+
+---
+
+## 🚀 Live Vercel URL
+
+https://temp-8521w0bxh-om-prakash-dubeys-projects.vercel.app
+
+---
+
+## 📂 GitHub Repository
+
+https://github.com/omdubey05/smart-bookmark
+
+---
+
+## 🛠 Tech Stack
+
+- **Next.js** (App Router)
+- **Supabase**
+  - Authentication (Google OAuth)
+  - PostgreSQL Database
+  - Realtime subscriptions
+- **Tailwind CSS**
+- **Vercel** (Deployment)
+
+---
+
+## ⚙️ Application Flow
+
+### 1. Authentication
+Users sign in using Google OAuth via Supabase Auth.
+
+After login, Supabase creates a user session which is used to control access.
+
+---
+
+### 2. Private Bookmarks
+
+Each bookmark is linked to the logged-in user using:
+
+
+
+Row Level Security (RLS) ensures users can only access their own bookmarks.
+
+---
+
+### 3. Real-Time Updates
+
+Supabase Realtime listens for database changes:
+
+- Adding bookmark updates instantly
+- Deleting bookmark updates instantly
+- Works across multiple tabs
+
+---
+
+## 🗄 Database Schema
+
+```sql
+create table bookmarks (
+  id uuid default uuid_generate_v4() primary key,
+  user_id uuid references auth.users not null,
+  title text not null,
+  url text not null,
+  created_at timestamp with time zone default timezone('utc', now())
+);
+
+
+🧩 Problems Faced & Solutions
+
+ 1. Google OAuth redirect_uri_mismatch
+
+Problem: Login failed due to invalid redirect URI.
+
+Solution: Added correct callback URL in Google Cloud Console:
+
+https://PROJECT_ID.supabase.co/auth/v1/callback
+
+ 2. All users seeing same bookmarks
+
+Problem: Bookmarks were shared across users.
+
+Solution:
+
+Added RLS policies
+
+Filtered queries using:
+
+.eq("user_id", user.id)
+
+ 3. Vercel Deployment Failed
+
+Problem: Build error:
+
+supabaseUrl is required
+
+
+Solution: Added environment variables in Vercel:
+
+NEXT_PUBLIC_SUPABASE_URL
+NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+ 4. Dashboard opened without login
+
+Problem: Unauthorized users accessed dashboard.
+
+Solution: Checked session before loading dashboard:
+
+supabase.auth.getUser()
+
+
+and redirected unauthenticated users to login page.
+
+Local Setup
+
+Clone repository:
+
+git clone https://github.com/omdubey05/smart-bookmark.git
+cd smart-bookmark
+
+
+Install dependencies:
+
+npm install
+
+
+Create .env.local file:
+
+NEXT_PUBLIC_SUPABASE_URL=YOUR_SUPABASE_URL
+NEXT_PUBLIC_SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
+
+
+Run development server:
+
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
